@@ -16,24 +16,58 @@ class ViewController: UIViewController {
         
         // Query using an NSPredicate object
         let predicate = NSPredicate(format: "title BEGINSWITH %@", "Booya")
-        var challenges = TotalCountChallenge.objectsWithPredicate(predicate)
+        var challenges = Challenge.objectsWithPredicate(predicate)
         
         if challenges == nil || challenges.count == 0 {
-            let challenge = TotalCountChallenge()
-            challenge.title = "Booya Challenge"
-            challenge.totalCountGoal = 1_000_000
+            let tcChallenge = TotalCountChallenge()
+            tcChallenge.title = "Booya Total Count Challenge"
+            tcChallenge.totalCountGoal = 1_000_000
+            
+            let rChallenge = RecurringChallenge()
+            rChallenge.title = "Booya Recurring Challenge"
+            rChallenge.recurranceType = .Weekly
+            rChallenge.totalCountGoal = 2_000_000
             
             let realm = RLMRealm.defaultRealm()
             // You only need to do this once (per thread)
         
             // Add to the Realm inside a transaction
             realm.beginWriteTransaction()
-            realm.addObject(challenge)
+            realm.addObject(tcChallenge)
+            realm.addObject(rChallenge)
             realm.commitWriteTransaction()
-        } else {
-            let challenge: TotalCountChallenge! = challenges[0] as! TotalCountChallenge
-            println("\(challenge.title) \(challenge.totalCountGoal)")
         }
+        
+        challenges = Challenge.objectsWithPredicate(predicate)
+        if challenges != nil && challenges.count > 0 {
+            for challenge in challenges {
+                let c = challenge as! Challenge
+                println("\(c.title)")
+            }
+        } else {
+            println("No Challenges found")
+        }
+        
+        challenges = TotalCountChallenge.objectsWithPredicate(predicate)
+        if challenges != nil && challenges.count > 0 {
+            for challenge in challenges {
+                let c = challenge as! Challenge
+                println("TotalCountChallenge: \(c.title)")
+            }
+        } else {
+            println("No Total Count Challenges found")
+        }
+        
+        challenges = RecurringChallenge.objectsWithPredicate(predicate)
+        if challenges != nil && challenges.count > 0 {
+            for challenge in challenges {
+                let c = challenge as! Challenge
+                println("RecurringChallenge \(c.title)")
+            }
+        } else {
+            println("No Recurring Challenges found")
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
